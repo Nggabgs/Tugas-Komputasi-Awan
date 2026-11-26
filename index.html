@@ -45,6 +45,7 @@
         }
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
+            height: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
             background: rgba(0, 0, 0, 0.05);
@@ -87,7 +88,7 @@
                     <button id="nav-btn-tugas" onclick="switchPage('tugas')" class="nav-tab px-5 py-2 rounded-full text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all duration-200 flex items-center gap-2">
                         <i class="fa-solid fa-book-bookmark text-base"></i>
                         <span>Tugas Kuliah</span>
-                        <span id="tugas-badge-count" class="ml-1 px-2 py-0.5 text-xs rounded-full bg-brand-100 dark:bg-brand-900/60 text-brand-700 dark:text-brand-300 font-semibold">4</span>
+                        <span id="tugas-badge-count" class="ml-1 px-2 py-0.5 text-xs rounded-full bg-brand-100 dark:bg-brand-900/60 text-brand-700 dark:text-brand-300 font-semibold">1</span>
                     </button>
                 </nav>
 
@@ -203,11 +204,17 @@
                     </p>
                 </div>
 
-                <!-- Add Assignment Button -->
-                <button onclick="openAddModal()" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition-colors shadow-md shadow-brand-600/20">
-                    <i class="fa-solid fa-plus"></i>
-                    <span>Tambah Tugas Baru</span>
-                </button>
+                <!-- Action Buttons: Add Category & Add Assignment -->
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <button onclick="openCategoryModal()" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-800 font-semibold text-sm transition-colors">
+                        <i class="fa-solid fa-folder-plus text-brand-600 dark:text-cyan-400"></i>
+                        <span>Tambah Kategori</span>
+                    </button>
+                    <button onclick="openAddModal()" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition-colors shadow-md shadow-brand-600/20">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Tambah Tugas Baru</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Filters & Search Bar -->
@@ -218,23 +225,9 @@
                     <input type="text" id="search-input" onkeyup="filterAssignments()" placeholder="Cari judul tugas, teknologi, atau mata kuliah..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all">
                 </div>
 
-                <!-- Category Filters -->
-                <div class="flex items-center gap-1.5 overflow-x-auto pb-2 lg:pb-0 custom-scrollbar">
-                    <button onclick="setCategoryFilter('all', this)" class="category-btn active px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-brand-600 text-white shadow-sm transition-all">
-                        Semua
-                    </button>
-                    <button onclick="setCategoryFilter('Sistem Tertanam', this)" class="category-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
-                        Sistem Tertanam &amp; IoT
-                    </button>
-                    <button onclick="setCategoryFilter('Pemrograman Web', this)" class="category-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
-                        Pemrograman Web
-                    </button>
-                    <button onclick="setCategoryFilter('Jaringan Komputer', this)" class="category-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
-                        Jaringan Komputer
-                    </button>
-                    <button onclick="setCategoryFilter('IMK', this)" class="category-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
-                        IMK / UX
-                    </button>
+                <!-- Dynamic Category Filters -->
+                <div id="category-filters" class="flex items-center gap-1.5 overflow-x-auto pb-2 lg:pb-0 custom-scrollbar">
+                    <!-- Populated dynamically via JS -->
                 </div>
             </div>
 
@@ -269,7 +262,7 @@
 
     <!-- ================= MODAL DETAIL TUGAS ================= -->
     <div id="detail-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
-        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300" id="detail-modal-box">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300" id="detail-modal-box">
             <!-- Header -->
             <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-start justify-between gap-4">
                 <div>
@@ -285,12 +278,12 @@
             <!-- Body Content -->
             <div class="p-6 overflow-y-auto custom-scrollbar space-y-6">
                 <div>
-                    <h4 class="text-xs uppercase font-bold tracking-wider text-slate-400 mb-2">Deskripsi &amp; Ringkasan Tugas</h4>
+                    <h4 class="text-xs uppercase font-bold tracking-wider text-slate-400 mb-2">Deskripsi &amp; Penjelasan Tugas</h4>
                     <p id="modal-desc" class="text-slate-700 dark:text-slate-300 text-sm leading-relaxed whitespace-pre-line"></p>
                 </div>
 
                 <div>
-                    <h4 class="text-xs uppercase font-bold tracking-wider text-slate-400 mb-2">Teknologi / Perangkat Diterapkan</h4>
+                    <h4 class="text-xs uppercase font-bold tracking-wider text-slate-400 mb-2">Topik / Teknologi Terkait</h4>
                     <div id="modal-tech" class="flex flex-wrap gap-2"></div>
                 </div>
 
@@ -301,13 +294,18 @@
             </div>
 
             <!-- Footer Action Buttons -->
-            <div class="p-4 sm:p-6 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-wrap items-center justify-end gap-3">
-                <button onclick="closeDetailModal()" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
-                    Tutup
+            <div class="p-4 sm:p-6 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-wrap items-center justify-between gap-3">
+                <button id="modal-delete-btn" onclick="deleteCurrentAssignment()" class="px-4 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-trash-can"></i> Hapus Tugas
                 </button>
-                <a id="modal-repo-link" href="#" target="_blank" rel="noopener noreferrer" class="px-5 py-2 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs sm:text-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2">
-                    <i class="fa-brands fa-github"></i> Lihat Repository / Berkas
-                </a>
+                <div class="flex flex-wrap items-center gap-3 ml-auto">
+                    <button onclick="closeDetailModal()" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+                        Tutup
+                    </button>
+                    <a id="modal-repo-link" href="#" target="_blank" rel="noopener noreferrer" class="px-5 py-2 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs sm:text-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2">
+                        <i class="fa-brands fa-github"></i> Lihat Repository / Berkas
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -326,43 +324,46 @@
             <form id="add-task-form" onsubmit="handleAddTask(event)" class="p-6 overflow-y-auto custom-scrollbar space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Judul Tugas *</label>
-                    <input type="text" id="form-title" required placeholder="Contoh: Konfigurasi VLAN &amp; OSPF Router" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500">
+                    <input type="text" id="form-title" required placeholder="Contoh: Arsitektur Cloud & Virtualisasi" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Mata Kuliah *</label>
-                        <input type="text" id="form-course" required placeholder="Jaringan Komputer II" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500">
+                        <input type="text" id="form-course" required placeholder="Komputasi Awan" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Semester / Tahun *</label>
-                        <input type="text" id="form-semester" required placeholder="Semester 4 (2025)" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500">
+                        <input type="text" id="form-semester" required placeholder="Semester 5 (2026)" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500">
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Kategori *</label>
-                    <select id="form-category" required class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500">
-                        <option value="Sistem Tertanam">Sistem Tertanam &amp; IoT</option>
-                        <option value="Pemrograman Web">Pemrograman Web</option>
-                        <option value="Jaringan Komputer">Jaringan Komputer</option>
-                        <option value="IMK">IMK / UX</option>
+                    <select id="form-category" onchange="handleCategorySelectChange(this)" required class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500">
+                        <!-- Populated dynamically via JS -->
                     </select>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Deskripsi Ringkas *</label>
-                    <textarea id="form-desc" required rows="3" placeholder="Jelaskan ringkasan proyek atau praktikum yang Anda kerjakan..." class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500"></textarea>
+                <!-- Inline New Category Input (appears when "+ Tambah Kategori Baru..." is selected) -->
+                <div id="inline-new-category-wrapper" class="hidden">
+                    <label class="block text-xs font-bold text-brand-600 dark:text-cyan-400 mb-1">Nama Kategori Baru *</label>
+                    <input type="text" id="form-new-category" placeholder="Contoh: Pemrograman Web / Jaringan Komputer" class="w-full px-3.5 py-2 rounded-xl bg-brand-50/50 dark:bg-slate-800 border border-brand-300 dark:border-cyan-500/50 text-sm focus:outline-none focus:border-brand-500">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Teknologi (Pisahkan Koma)</label>
-                    <input type="text" id="form-tech" placeholder="MikroTik, Wireshark, GNS3" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500">
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Deskripsi / Penjelasan Tugas *</label>
+                    <textarea id="form-desc" required rows="5" placeholder="Tuliskan penjelasan lengkap, analisis, atau ringkasan tugas yang Anda kerjakan..." class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Teknologi / Kata Kunci (Pisahkan Koma)</label>
+                    <input type="text" id="form-tech" placeholder="Cloud Computing, SaaS, Data Security" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500">
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Link Repository / Dokumen (Opsional)</label>
-                    <input type="url" id="form-link" placeholder="https://github.com/username/project" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500">
+                    <input type="url" id="form-link" placeholder="https://github.com/Nggabgs/..." class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500">
                 </div>
 
                 <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
@@ -374,71 +375,232 @@
     </div>
 
 
+    <!-- ================= MODAL TAMBAH KATEGORI BARU ================= -->
+    <div id="category-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-md w-full overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300" id="category-modal-box">
+            <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Kelola &amp; Tambah Kategori</h3>
+                <button onclick="closeCategoryModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-5">
+                <form onsubmit="handleAddCategory(event)" class="space-y-3">
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">Nama Kategori Baru</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="new-category-input" required placeholder="Contoh: Sistem Tertanam" class="flex-grow px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500">
+                        <button type="submit" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-semibold transition-colors">
+                            Tambah
+                        </button>
+                    </div>
+                </form>
+
+                <div>
+                    <h4 class="text-xs uppercase font-bold tracking-wider text-slate-400 mb-2">Daftar Kategori Tersimpan</h4>
+                    <div id="saved-categories-list" class="flex flex-wrap gap-2">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <!-- ================= JAVASCRIPT LOGIC ================= -->
     <script>
-        // Default Sample Assignments Data
+        // Default Categories
+        const defaultCategories = ["Komputasi Awan"];
+
+        // Default Assignment Data (Mata Kuliah Komputasi Awan)
         const defaultAssignments = [
             {
                 id: 1,
-                title: "Akuisisi Data Suhu & Kelembaban ESP32 ke CSV",
-                course: "Sistem Tertanam & IoT",
-                semester: "Semester 3",
-                category: "Sistem Tertanam",
-                description: "Praktikum membuat program akuisisi sensor DHT22 menggunakan mikrokontroler ESP32. Data dibaca melalui serial communication dan dicatat secara otomatis ke file CSV menggunakan script Python.",
-                outcome: "Berhasil membaca sensor dengan interval 2 detik dan menghasilkan data logging yang bersih tanpa paket lost.",
-                tech: ["ESP32", "Arduino C++", "Python Serial", "Sensor DHT22"],
-                link: "https://github.com"
-            },
-            {
-                id: 2,
-                title: "Aplikasi Web Manajemen Properti Berbasis Python",
-                course: "Pemrograman Web & Framework",
-                semester: "Semester 4",
-                category: "Pemrograman Web",
-                description: "Proyek akhir kelompok untuk merancang platform persewaan properti. Fitur utama mencakup katalog listing, filter harga, sistem reservasi tanggal, serta backend manajemen data.",
-                outcome: "Mendapat nilai A pada penilaian tugas besar karena antarmuka yang cepat dan struktur kode yang rapi.",
-                tech: ["Python", "Flask", "Tailwind CSS", "SQLite"],
-                link: "https://github.com"
-            },
-            {
-                id: 3,
-                title: "Evaluasi Usability UI/UX Aplikasi Ruijie Reyee (Metode SUS)",
-                course: "Interaksi Manusia & Komputer",
-                semester: "Semester 4",
-                category: "IMK",
-                description: "Penelitian kecil mengukur kemudahan penggunaan (*Usability*) aplikasi mobile Ruijie Reyee Router Management menggunakan metode System Usability Scale (SUS) terhadap 15 responden pengguna jaringan.",
-                outcome: "Skor SUS rata-rata mencapai 78.5 (Grade B/Good), menunjukkan tingkat kepuasan antarmuka yang tinggi.",
-                tech: ["System Usability Scale (SUS)", "Google Forms", "Figma", "Data Analysis"],
-                link: "https://github.com"
-            },
-            {
-                id: 4,
-                title: "Simulasi Topologi Jaringan & OSPF Routing Multi-VLAN",
-                course: "Jaringan & Komunikasi Data",
-                semester: "Semester 3",
-                category: "Jaringan Komputer",
-                description: "Desain dan simulasi infrastruktur jaringan perusahaan skala menengah menggunakan 3 Router MikroTik dan 4 Switch. Menggunakan konfigurasi VLAN tagging (IEEE 802.1Q) dan dynamic routing protocol OSPF.",
-                outcome: "Seluruh inter-VLAN routing berjalan lancar dengan redundansi failover otomatis.",
-                tech: ["Cisco Packet Tracer", "MikroTik OS", "VLAN 802.1Q", "OSPF Protocol"],
-                link: "https://github.com"
+                title: "Peran Pemangku Kepentingan (Stakeholders) dalam Pengelolaan Data Berbasis Cloud",
+                course: "Komputasi Awan",
+                semester: "Semester 5 (2026)",
+                category: "Komputasi Awan",
+                description: `Pengelolaan data dalam aplikasi berbasis cloud melibatkan berbagai pihak yang memiliki peran, tanggung jawab, dan kepentingan unik terhadap keamanan, integritas, serta ketersediaan data.
+
+Berikut adalah 3 pemangku kepentingan (stakeholders) utama beserta penjelasan dan contoh perannya pada masing-masing bidang:
+
+1. Bidang Hotel Reservasi
+Dalam sistem reservasi hotel berbasis cloud (seperti Property Management System berbasis SaaS), data yang dikelola mencakup informasi pribadi tamu, detail pembayaran, dan ketersediaan kamar secara real-time.
+• Front Office Manager / Reservation Supervisor (Pengguna Operasional)
+  - Penjelasan: Bertanggung jawab langsung terhadap operasional harian menggunakan data cloud. Mereka memasukkan, memperbarui, dan memantau status pemesanan kamar, check-in, hingga preferensi khusus tamu.
+  - Contoh Peran: Memastikan data ketersediaan kamar di aplikasi cloud sinkron secara akurat untuk menghindari overbooking (kelebihan pemesanan) saat musim liburan puncak.
+• Data Protection Officer (DPO) / Manajer Kepatuhan Privasi
+  - Penjelasan: Memastikan bahwa data sensitif tamu (seperti nomor kartu kredit, paspor, dan riwayat perjalanan) dikelola sesuai dengan regulasi perlindungan data yang berlaku (misalnya UU PDP di Indonesia atau GDPR bagi tamu internasional).
+  - Contoh Peran: Mengatur kebijakan retensi data, memastikan enkripsi data pribadi tamu saat disimpan maupun dikirim melalui cloud, serta menangani permintaan penghapusan data dari tamu.
+• Cloud Infrastructure Administrator / Vendor IT
+  - Penjelasan: Pihak internal atau penyedia pihak ketiga yang mengelola infrastruktur server cloud, jaringan, dan performa basis data aplikasi reservasi.
+  - Contoh Peran: Mengonfigurasi mekanisme auto-scaling pada cloud agar aplikasi tetap stabil dan tidak down ketika terjadi lonjakan trafik pemesanan mendadak, serta menjalankan prosedur backup harian.
+
+2. Bidang SIM Rumah Sakit (SIMRS)
+Sistem Informasi Manajemen Rumah Sakit berbasis cloud menangani data medis yang sangat sensitif, termasuk Rekam Medis Elektronik (RME), jadwal dokter, hingga resep obat pasien.
+• Kepala Rekam Medis (Medical Records Manager)
+  - Penjelasan: Pihak yang berwenang atas tata kelola data klinis pasien, memastikan keakuratan, kelengkapan, serta kerahasiaan catatan medis di dalam sistem.
+  - Contoh Peran: Menentukan hak akses bagi tenaga medis terhadap rekam medis masa lalu pasien dan memastikan riwayat diagnosis pasien tersimpan secara terstruktur dan dapat diaudit.
+• Chief Information Security Officer (CISO) / Manajer Keamanan Informasi Rumah Sakit
+  - Penjelasan: Bertanggung jawab penuh terhadap perlindungan data kesehatan pasien dari ancaman kebocoran data, serangan siber (ransomware), atau akses ilegal pada server cloud.
+  - Contoh Peran: Menerapkan kontrol akses berbasis peran (Role-Based Access Control / RBAC) di cloud sehingga hanya dokter yang merawat pasien bersangkutan yang dapat membuka data medis lengkap.
+• Dokter / Tenaga Medis (Clinical End-Users)
+  - Penjelasan: Pengguna utama yang menghasilkan dan memanfaatkan data medis secara langsung untuk kepentingan diagnosis dan perawatan pasien.
+  - Contoh Peran: Menginput resep obat, hasil laboratorium, dan catatan observasi harian langsung ke aplikasi SIMRS berbasis cloud melalui gawai atau komputer rumah sakit secara real-time.
+
+3. Bidang Perbankan
+Aplikasi perbankan berbasis cloud (seperti mobile banking, core banking system modern) mengelola aset finansial, data transaksi tinggi, dan identitas finansial nasabah yang memerlukan tingkat keamanan paling ketat.
+• Risk & Compliance Officer (Manajer Kepatuhan & Manajemen Risiko)
+  - Penjelasan: Memastikan seluruh arsitektur penyimpanan dan pemrosesan data di cloud mematuhi regulasi perbankan yang ketat dari Otoritas Jasa Keuangan (OJK), Bank Indonesia, serta standar internasional seperti PCI-DSS.
+  - Contoh Peran: Melakukan audit berkala terhadap lokasi penyimpanan fisik server cloud (data residency) dan memastikan regulasi anti-pencucian uang (AML) terpenuhi melalui analisis data transaksi.
+• Cloud Security Architect / Database Administrator
+  - Penjelasan: Ahli teknis yang merancang pengamanan data tingkat lanjut (encryption at-rest dan in-transit), manajemen kunci enkripsi, serta sistem pemulihan bencana (disaster recovery).
+  - Contoh Peran: Mengonfigurasi replikasi basis data keuangan secara multi-region di cloud agar sistem perbankan tetap dapat diakses meskipun terjadi kegagalan server di salah satu lokasi.
+• Nasabah (Customer / End User)
+  - Penjelasan: Pemilik sah dari data finansial dan identitas yang dikelola oleh bank. Meskipun berada di ujung rantai, nasabah adalah pemangku kepentingan yang memegang hak atas persetujuan (consent) penggunaan datanya.
+  - Contoh Peran: Memberikan izin akses biometrik atau verifikasi dua langkah (2FA) saat melakukan transaksi finansial melalui aplikasi mobile banking berbasis cloud.`,
+                outcome: "Memahami peran operasional, perlindungan privasi/regulasi (UU PDP, GDPR, OJK, PCI-DSS), serta arsitektur keamanan infrastruktur dalam pengelolaan data berbasis cloud.",
+                tech: ["Cloud Computing", "Data Governance", "SaaS & Cloud Security", "RBAC & Encryption", "Compliance"],
+                link: ""
             }
         ];
 
         // State Management
         let assignments = [];
+        let categories = [];
         let activeCategory = 'all';
+        let currentDetailId = null;
 
         // Initialize App
         window.addEventListener('DOMContentLoaded', () => {
             initTheme();
+            loadCategories();
             loadAssignments();
             handleHashNavigation();
             document.getElementById('year').innerText = new Date().getFullYear();
         });
 
+        // Load & Render Categories
+        function loadCategories() {
+            const storedCats = localStorage.getItem('academic_categories_v2');
+            if (storedCats) {
+                try {
+                    categories = JSON.parse(storedCats);
+                } catch (e) {
+                    categories = [...defaultCategories];
+                }
+            } else {
+                categories = [...defaultCategories];
+                localStorage.setItem('academic_categories_v2', JSON.stringify(categories));
+            }
+            renderCategoryUI();
+        }
+
+        function saveCategories() {
+            localStorage.setItem('academic_categories_v2', JSON.stringify(categories));
+            renderCategoryUI();
+        }
+
+        function renderCategoryUI() {
+            // 1. Render Filter Bar Buttons
+            const filterContainer = document.getElementById('category-filters');
+            const allBtnClass = activeCategory === 'all'
+                ? "category-btn active px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-brand-600 text-white shadow-sm transition-all"
+                : "category-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all";
+
+            let filterHTML = `
+                <button onclick="setCategoryFilter('all')" class="${allBtnClass}">
+                    Semua
+                </button>
+            `;
+
+            categories.forEach(cat => {
+                const isSelected = activeCategory === cat;
+                const btnClass = isSelected
+                    ? "category-btn active px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-brand-600 text-white shadow-sm transition-all"
+                    : "category-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all";
+
+                filterHTML += `
+                    <button onclick="setCategoryFilter('${escapeAttr(cat)}')" class="${btnClass}">
+                        ${escapeHtml(cat)}
+                    </button>
+                `;
+            });
+
+            filterHTML += `
+                <button onclick="openCategoryModal()" title="Tambah Kategori Baru" class="px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-cyan-400 border border-brand-200/80 dark:border-brand-800/50 hover:bg-brand-100 dark:hover:bg-brand-900/60 transition-all flex items-center gap-1">
+                    <i class="fa-solid fa-plus text-[11px]"></i> Kategori
+                </button>
+            `;
+
+            filterContainer.innerHTML = filterHTML;
+
+            // 2. Render Dropdown in Add Task Modal
+            const selectEl = document.getElementById('form-category');
+            if (selectEl) {
+                let optionsHTML = categories.map(cat => `<option value="${escapeAttr(cat)}">${escapeHtml(cat)}</option>`).join('');
+                optionsHTML += `<option value="__new__">+ Tambah Kategori Baru...</option>`;
+                selectEl.innerHTML = optionsHTML;
+            }
+
+            // 3. Render Saved Categories List in Category Modal
+            const listEl = document.getElementById('saved-categories-list');
+            if (listEl) {
+                listEl.innerHTML = categories.map((cat, idx) => `
+                    <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
+                        <span>${escapeHtml(cat)}</span>
+                        ${categories.length > 1 ? `<button type="button" onclick="removeCategory(${idx})" class="text-slate-400 hover:text-rose-500 transition-colors" title="Hapus kategori"><i class="fa-solid fa-xmark"></i></button>` : ''}
+                    </span>
+                `).join('');
+            }
+        }
+
+        function handleCategorySelectChange(selectEl) {
+            const wrapper = document.getElementById('inline-new-category-wrapper');
+            const input = document.getElementById('form-new-category');
+            if (selectEl.value === '__new__') {
+                wrapper.classList.remove('hidden');
+                input.required = true;
+                input.focus();
+            } else {
+                wrapper.classList.add('hidden');
+                input.required = false;
+                input.value = '';
+            }
+        }
+
+        function handleAddCategory(event) {
+            event.preventDefault();
+            const input = document.getElementById('new-category-input');
+            const newCat = input.value.trim();
+            if (!newCat) return;
+
+            const exists = categories.some(c => c.toLowerCase() === newCat.toLowerCase());
+            if (exists) {
+                showToast('Kategori tersebut sudah ada!');
+                return;
+            }
+
+            categories.push(newCat);
+            saveCategories();
+            input.value = '';
+            showToast(`Kategori "${newCat}" berhasil ditambahkan!`);
+        }
+
+        function removeCategory(index) {
+            const removed = categories[index];
+            categories.splice(index, 1);
+            if (activeCategory === removed) {
+                activeCategory = 'all';
+            }
+            saveCategories();
+            renderAssignments();
+            showToast(`Kategori "${removed}" dihapus`);
+        }
+
         // Load assignments from localStorage or fallback to default
         function loadAssignments() {
-            const stored = localStorage.getItem('academic_assignments');
+            const stored = localStorage.getItem('academic_assignments_v2');
             if (stored) {
                 try {
                     assignments = JSON.parse(stored);
@@ -447,7 +609,7 @@
                 }
             } else {
                 assignments = [...defaultAssignments];
-                localStorage.setItem('academic_assignments', JSON.stringify(assignments));
+                localStorage.setItem('academic_assignments_v2', JSON.stringify(assignments));
             }
             renderAssignments();
         }
@@ -527,6 +689,7 @@
                 const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
                 const matchesSearch = item.title.toLowerCase().includes(searchVal) ||
                                       item.course.toLowerCase().includes(searchVal) ||
+                                      item.description.toLowerCase().includes(searchVal) ||
                                       item.tech.some(t => t.toLowerCase().includes(searchVal));
                 return matchesCategory && matchesSearch;
             });
@@ -554,7 +717,7 @@
                             ${escapeHtml(item.title)}
                         </h3>
 
-                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed">
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-4 leading-relaxed">
                             ${escapeHtml(item.description)}
                         </p>
                     </div>
@@ -565,7 +728,7 @@
                         </div>
 
                         <button onclick="openDetailModal(${item.id})" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-brand-600 hover:text-white dark:hover:bg-brand-600 text-slate-700 dark:text-slate-200 font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2">
-                            <span>Lihat Detail Tugas</span>
+                            <span>Lihat Detail &amp; Penjelasan Lengkap</span>
                             <i class="fa-solid fa-arrow-right text-xs"></i>
                         </button>
                     </div>
@@ -574,12 +737,9 @@
         }
 
         // Filtering Actions
-        function setCategoryFilter(category, btnElement) {
+        function setCategoryFilter(category) {
             activeCategory = category;
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.className = "category-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all";
-            });
-            btnElement.className = "category-btn active px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-brand-600 text-white shadow-sm transition-all";
+            renderCategoryUI();
             renderAssignments();
         }
 
@@ -592,17 +752,18 @@
             const item = assignments.find(a => a.id === id);
             if (!item) return;
 
+            currentDetailId = id;
             document.getElementById('modal-category').innerText = item.category;
             document.getElementById('modal-title').innerText = item.title;
             document.getElementById('modal-course').innerText = `${item.course} • ${item.semester}`;
             document.getElementById('modal-desc').innerText = item.description;
-            document.getElementById('modal-outcome').innerText = item.outcome || 'Tugas diselesaikan sesuai standar modul praktikum.';
+            document.getElementById('modal-outcome').innerText = item.outcome || 'Tugas diselesaikan sesuai standar modul perkuliahan.';
 
             const techContainer = document.getElementById('modal-tech');
             techContainer.innerHTML = item.tech.map(t => `<span class="px-3 py-1 rounded-md bg-brand-50 dark:bg-slate-800 text-brand-700 dark:text-cyan-400 text-xs font-bold border border-brand-200/60 dark:border-slate-700">${escapeHtml(t)}</span>`).join('');
 
             const repoBtn = document.getElementById('modal-repo-link');
-            if (item.link) {
+            if (item.link && item.link !== '#') {
                 repoBtn.href = item.link;
                 repoBtn.classList.remove('hidden');
             } else {
@@ -627,11 +788,25 @@
             modalBox.classList.add('scale-95');
             setTimeout(() => {
                 modal.classList.add('hidden');
+                currentDetailId = null;
             }, 300);
+        }
+
+        function deleteCurrentAssignment() {
+            if (currentDetailId === null) return;
+            assignments = assignments.filter(a => a.id !== currentDetailId);
+            localStorage.setItem('academic_assignments_v2', JSON.stringify(assignments));
+            renderAssignments();
+            closeDetailModal();
+            showToast('Tugas berhasil dihapus');
         }
 
         // Add Task Modal Controller
         function openAddModal() {
+            renderCategoryUI();
+            document.getElementById('inline-new-category-wrapper').classList.add('hidden');
+            document.getElementById('form-new-category').required = false;
+
             const modal = document.getElementById('add-modal');
             const modalBox = document.getElementById('add-modal-box');
             modal.classList.remove('hidden');
@@ -655,13 +830,23 @@
 
         function handleAddTask(event) {
             event.preventDefault();
-            const title = document.getElementById('form-title').value;
-            const course = document.getElementById('form-course').value;
-            const semester = document.getElementById('form-semester').value;
-            const category = document.getElementById('form-category').value;
-            const desc = document.getElementById('form-desc').value;
+            const title = document.getElementById('form-title').value.trim();
+            const course = document.getElementById('form-course').value.trim();
+            const semester = document.getElementById('form-semester').value.trim();
+            let category = document.getElementById('form-category').value;
+            const desc = document.getElementById('form-desc').value.trim();
             const techStr = document.getElementById('form-tech').value;
-            const link = document.getElementById('form-link').value;
+            const link = document.getElementById('form-link').value.trim();
+
+            if (category === '__new__') {
+                const customCat = document.getElementById('form-new-category').value.trim();
+                if (!customCat) return;
+                category = customCat;
+                if (!categories.some(c => c.toLowerCase() === customCat.toLowerCase())) {
+                    categories.push(customCat);
+                    saveCategories();
+                }
+            }
 
             const newAssignment = {
                 id: Date.now(),
@@ -671,21 +856,49 @@
                 category,
                 description: desc,
                 outcome: "Tugas baru ditambahkan ke penyimpanan lokal browser.",
-                tech: techStr ? techStr.split(',').map(s => s.trim()) : ['Tugas Baru'],
-                link: link || '#'
+                tech: techStr ? techStr.split(',').map(s => s.trim()).filter(Boolean) : [category],
+                link: link || ''
             };
 
             assignments.unshift(newAssignment);
-            localStorage.setItem('academic_assignments', JSON.stringify(assignments));
+            localStorage.setItem('academic_assignments_v2', JSON.stringify(assignments));
             renderAssignments();
             closeAddModal();
             document.getElementById('add-task-form').reset();
             showToast('Tugas baru berhasil disimpan!');
         }
 
+        // Category Modal Controller
+        function openCategoryModal() {
+            renderCategoryUI();
+            const modal = document.getElementById('category-modal');
+            const modalBox = document.getElementById('category-modal-box');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalBox.classList.remove('scale-95');
+                modalBox.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeCategoryModal() {
+            const modal = document.getElementById('category-modal');
+            const modalBox = document.getElementById('category-modal-box');
+            modal.classList.add('opacity-0');
+            modalBox.classList.remove('scale-100');
+            modalBox.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
         // Helper Utility Functions
         function escapeHtml(str) {
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function escapeAttr(str) {
+            return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
         }
 
         function showToast(message) {
